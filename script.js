@@ -755,7 +755,9 @@
     if (event) link.href = googleCalUrl(event);
   });
 
-  /* ---------- Music (try autoplay; unmute / start on first gesture if blocked) ---------- */
+  /* ---------- Music ----------
+     Try autoplay on load. Always arm touch / click / scroll to start or unmute.
+  -------------------------------- */
   const musicBtn = document.getElementById("musicBtn");
   const bgMusic = document.getElementById("bgMusic");
   const speakerOn = musicBtn?.querySelector(".icon-btn__speaker--on");
@@ -763,6 +765,7 @@
   let musicPlaying = false;
   let musicMuted = false;
   let pendingUnmute = false;
+  let gestureArmed = false;
 
   function syncMusicIcon() {
     if (!musicBtn) return;
@@ -787,47 +790,68 @@
     syncMusicIcon();
   }
 
+  function musicIsAudible() {
+    return musicPlaying && !musicMuted && !pendingUnmute;
+  }
+
   function clearGestureUnlock() {
+    if (!gestureArmed) return;
+    gestureArmed = false;
     window.removeEventListener("pointerdown", onGestureUnlock, true);
     window.removeEventListener("touchstart", onGestureUnlock, true);
+    window.removeEventListener("click", onGestureUnlock, true);
     window.removeEventListener("keydown", onGestureUnlock, true);
     window.removeEventListener("wheel", onGestureUnlock, true);
     window.removeEventListener("scroll", onGestureUnlock, true);
+    window.removeEventListener("touchmove", onGestureUnlock, true);
   }
 
   function onGestureUnlock(e) {
     if (e?.target?.closest?.("#musicBtn")) return;
+    if (musicMuted) {
+      /* User chose mute — stop trying to force sound */
+      clearGestureUnlock();
+      return;
+    }
 
-    if (pendingUnmute && musicPlaying && !musicMuted) {
+    if (musicIsAudible()) {
+      clearGestureUnlock();
+      return;
+    }
+
+    if (!bgMusic) return;
+
+    if (pendingUnmute && musicPlaying) {
       pendingUnmute = false;
       applyAudibleState();
       clearGestureUnlock();
       return;
     }
 
-    if (!musicPlaying && bgMusic) {
-      pendingUnmute = false;
-      musicMuted = false;
-      bgMusic.muted = false;
-      bgMusic.volume = 0.35;
-      bgMusic
-        .play()
-        .then(() => {
-          musicPlaying = true;
-          syncMusicIcon();
-          clearGestureUnlock();
-        })
-        .catch(() => {});
-    }
+    pendingUnmute = false;
+    musicMuted = false;
+    bgMusic.muted = false;
+    bgMusic.volume = 0.35;
+    bgMusic
+      .play()
+      .then(() => {
+        musicPlaying = true;
+        syncMusicIcon();
+        clearGestureUnlock();
+      })
+      .catch(() => {});
   }
 
   function armGestureUnlock() {
-    clearGestureUnlock();
+    if (gestureArmed || musicIsAudible()) return;
+    gestureArmed = true;
     window.addEventListener("pointerdown", onGestureUnlock, true);
     window.addEventListener("touchstart", onGestureUnlock, { capture: true, passive: true });
+    window.addEventListener("click", onGestureUnlock, true);
     window.addEventListener("keydown", onGestureUnlock, true);
     window.addEventListener("wheel", onGestureUnlock, { capture: true, passive: true });
-    window.addEventListener("scroll", onGestureUnlock, true);
+    window.addEventListener("scroll", onGestureUnlock, { capture: true, passive: true });
+    window.addEventListener("touchmove", onGestureUnlock, { capture: true, passive: true });
   }
 
   async function bootMusic() {
@@ -837,6 +861,9 @@
       if (ctx?.state === "suspended") await ctx.resume();
     } catch (_) {}
 
+    /* Always listen — touch / click / scroll will start or unmute */
+    armGestureUnlock();
+
     try {
       pendingUnmute = false;
       musicMuted = false;
@@ -845,6 +872,7 @@
       await bgMusic.play();
       musicPlaying = true;
       syncMusicIcon();
+      clearGestureUnlock();
       return;
     } catch (_) {}
 
@@ -856,7 +884,6 @@
       musicMuted = false;
       pendingUnmute = true;
       syncMusicIcon();
-      armGestureUnlock();
       return;
     } catch (_) {}
 
@@ -864,10 +891,10 @@
     musicMuted = false;
     pendingUnmute = false;
     syncMusicIcon();
-    armGestureUnlock();
   }
 
   syncMusicIcon();
+  armGestureUnlock();
 
   if (bgMusic) {
     const kick = () => bootMusic();
@@ -897,7 +924,11 @@
     }
 
     musicMuted = !musicMuted;
-    if (musicMuted) pendingUnmute = false;
+    if (musicMuted) {
+      pendingUnmute = false;
+    } else {
+      /* Unmuting — keep gesture arming off; already playing */
+    }
     applyAudibleState();
   });
 })();

@@ -345,10 +345,23 @@ button {
   color: var(--gold);
 }
 
+/* Hands photo is edge-tight — show full frame, slight inset so radius doesn't clip fingers */
+.memory__frame--wide {
+  background: transparent;
+  display: grid;
+  place-items: center;
+}
+
 .memory__frame--wide img {
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
+  width: 92%;
+  height: auto;
+  aspect-ratio: 1838 / 1872;
+  object-fit: contain;
   object-position: center;
+}
+
+.memory--hands:hover .memory__frame img {
+  transform: none;
 }
 
 .confetti {
