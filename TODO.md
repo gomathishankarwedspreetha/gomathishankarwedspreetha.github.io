@@ -33,7 +33,8 @@ assets/audio/
 | **`couple-3.jpg`** | Memories row — looking at each other |
 | **`hands-held.png`** | Memories — henna hands strip · Venue section large photo |
 | **`bg-watermark.png`** | Soft full-page watermark via CSS (`styles.css` body / grain layer background) |
-| **`og-preview.png`** | WhatsApp / Facebook / Twitter link preview (`og:image` + `twitter:image` in `index.html`) |
+| **`og-preview.png`** | Source artwork for the social card (kept in repo) |
+| **`og-preview.jpg`** | WhatsApp / Facebook / Twitter link preview (`og:image` + `twitter:image`) — 1200×630 JPEG |
 
 ### `assets/icons/`
 
