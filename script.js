@@ -816,7 +816,7 @@
 
   /* ---------- WhatsApp share ---------- */
   const shareText =
-    "You're invited to the wedding of Gomathi Shankar & Preetha!\n\nReception · 28 Nov 2026, 7 PM onwards\nMuhurtham · 29 Nov 2026, 11 AM – 12 PM\nMaruveedu · 30 Nov 2026\n\nShree Narayana Mahall, Bikshandarkoil\n" +
+    "You're invited to the wedding of Gomathi Shankar & Preetha!\n\n- Reception · 28 Nov 2026, 7 PM onwards\n- Muhurtham · 29 Nov 2026, 11 AM – 12 PM\n- Maruveedu · 30 Nov 2026\n\nShree Narayana Mahall, Bikshandarkoil, Trichy - 621216\n" +
     SITE_URL;
   const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
