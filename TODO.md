@@ -4,13 +4,14 @@
 
 | Place the file here | Wired in |
 | --- | --- |
-| **`assets/audio/bg.mp3`** | `<audio id="bgMusic">` in `index.html` · toggled by the top-bar **Music** chip in `script.js` |
+| **`assets/audio/bg.mp3`** | `<audio id="bgMusic">` · toggled by the floating **speaker** icon (top-right) |
 
 Notes:
 
 - Drop any soft MP3 as **exactly** `bg.mp3` (filename matters).
 - Keep it reasonably small (ideally under ~5–8 MB) for GitHub Pages.
-- Until the file exists, tapping Music shows a toast: *Add assets/audio/bg.mp3 to enable music*.
+- Until the file exists, tapping the speaker shows a toast: *Add assets/audio/bg.mp3 to enable music*.
+- Floating icons (always on top of the hero): WhatsApp share · speaker mute/unmute.
 - Tap / click sounds use a separate file: `assets/audio/bloop.mp3` (already present).
 
 ```

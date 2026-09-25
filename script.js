@@ -140,9 +140,6 @@
   let globalPY = 0;
   let targetPX = 0;
   let targetPY = 0;
-  /* Shared with pull spring (declared early so parallax can read it) */
-  let pullCurrent = 0;
-  const PULL_MAX = 140;
 
   const hero = document.getElementById("hero");
   const layers = hero
@@ -219,12 +216,7 @@
     const mid = (viewH / 2 - (rect.top + rect.height / 2)) / viewH;
 
     layers.forEach(({ el, speed }) => {
-      const pullBoost = Math.min(1, pullCurrent / PULL_MAX);
-      const y =
-        progress * speed * 140 +
-        mid * speed * 40 +
-        globalPY * speed * 16 +
-        pullBoost * speed * 28;
+      const y = progress * speed * 140 + mid * speed * 40 + globalPY * speed * 16;
       const x = globalPX * speed * 28;
       el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     });
@@ -285,263 +277,18 @@
 
   updateParallax();
 
-  /* ---------- Instagram-style pull-to-invite (spring + parallax) ---------- */
-  const pullRoot = document.getElementById("pullRoot");
-  const pullZone = document.getElementById("pullZone");
-  const pullZoneLabel = document.getElementById("pullZoneLabel");
-  const inviteSheet = document.getElementById("inviteSheet");
-  const inviteBackdrop = document.getElementById("inviteSheetBackdrop");
-  const inviteClose = document.getElementById("inviteSheetClose");
-  const pullHint = document.getElementById("pullHint");
+  /* ---------- Tap for invite → smooth scroll to events ---------- */
+  const inviteHint = document.getElementById("inviteHint");
+  const eventsSection = document.getElementById("events");
 
-  /* Threshold must stay BELOW max resisted distance or it never opens */
-  const PULL_THRESHOLD = 52;
-  let sheetOpen = false;
-  let pulling = false;
-  let pullStartY = 0;
-  let pullTarget = 0;
-  let pullVelocity = 0;
-  let pullDistance = 0; /* mirrored from pullCurrent for threshold checks */
-
-  function atPageTop() {
-    return (window.scrollY || document.documentElement.scrollTop || 0) <= 8;
-  }
-
-  function resistPull(rawPx) {
-    const t = Math.max(0, rawPx);
-    /* Soft ease toward max — feels elastic without fighting the spring */
-    const n = Math.min(1, t / (PULL_MAX * 1.35));
-    return PULL_MAX * (1 - Math.pow(1 - n, 2.1));
-  }
-
-  function syncPullChrome(d) {
-    if (pullZone) {
-      pullZone.classList.toggle("is-pulling", d > 6);
-      pullZone.classList.toggle("is-ready", d >= PULL_THRESHOLD);
-    }
-    if (pullZoneLabel) {
-      pullZoneLabel.textContent = d >= PULL_THRESHOLD ? "Release for invite" : "Pull for invite";
-    }
-  }
-
-  function applyPullVisual(d) {
-    pullDistance = d;
-    if (pullRoot && !sheetOpen) {
-      if (d > 0.15) {
-        /* Slight scale + translate keeps the reveal fluid with parallax */
-        const s = 1 + Math.min(0.012, d / PULL_MAX * 0.012);
-        pullRoot.style.transform = `translate3d(0, ${d}px, 0) scale(${s})`;
-      } else {
-        pullRoot.style.transform = "";
-      }
-    }
-    syncPullChrome(d);
-  }
-
-  function setPullTarget(raw) {
-    pullTarget = resistPull(raw);
-  }
-
-  function resetPull(animate = true) {
-    pulling = false;
-    pullRoot?.classList.remove("is-dragging");
-    pullTarget = 0;
-    if (!animate) {
-      pullCurrent = 0;
-      pullVelocity = 0;
-      applyPullVisual(0);
-    }
-  }
-
-  function tickPullSpring() {
-    if (!reduceMotion) {
-      const dragging = pulling;
-      const stiffness = dragging ? 0.38 : 0.14;
-      const damping = dragging ? 0.62 : 0.78;
-      const force = (pullTarget - pullCurrent) * stiffness;
-      pullVelocity = pullVelocity * damping + force;
-      pullCurrent += pullVelocity;
-
-      if (!dragging && pullTarget === 0 && Math.abs(pullCurrent) < 0.35 && Math.abs(pullVelocity) < 0.35) {
-        pullCurrent = 0;
-        pullVelocity = 0;
-      }
-
-      applyPullVisual(pullCurrent);
-
-      /* Feed pull into global parallax for a unified motion feel */
-      if (pullCurrent > 0.5) {
-        const boost = Math.min(1, pullCurrent / PULL_MAX);
-        targetPY = Math.max(targetPY, boost * 0.55);
-        globalPY += (boost * 0.85 - globalPY) * 0.12;
-        requestParallax();
-      }
-    } else if (pullTarget !== pullCurrent) {
-      pullCurrent = pullTarget;
-      applyPullVisual(pullCurrent);
-    }
-    requestAnimationFrame(tickPullSpring);
-  }
-  requestAnimationFrame(tickPullSpring);
-
-  function openInviteSheet() {
-    if (!inviteSheet || sheetOpen) return;
-    sheetOpen = true;
-    resetPull(false);
-    applyPullVisual(0);
-    inviteSheet.hidden = false;
-    requestAnimationFrame(() => inviteSheet.classList.add("is-open"));
-    document.body.classList.add("invite-open");
+  function scrollToEvents(e) {
+    if (e) e.preventDefault();
+    if (!eventsSection) return;
+    eventsSection.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
     playBloop();
   }
 
-  function closeInviteSheet() {
-    if (!inviteSheet || !sheetOpen) return;
-    sheetOpen = false;
-    inviteSheet.classList.remove("is-open");
-    document.body.classList.remove("invite-open");
-    setTimeout(() => {
-      if (!sheetOpen) inviteSheet.hidden = true;
-    }, 350);
-    playBloop();
-  }
-
-  inviteBackdrop?.addEventListener("click", closeInviteSheet);
-  inviteClose?.addEventListener("click", closeInviteSheet);
-  pullHint?.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openInviteSheet();
-  });
-  pullHint?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      openInviteSheet();
-    }
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && sheetOpen) closeInviteSheet();
-  });
-
-  function shouldIgnorePullTarget(target) {
-    if (!target || !target.closest) return false;
-    return !!target.closest(
-      "a:not(#pullHint), button, input, textarea, select, label, .chip-btn, .btn, .link-btn, .scratch__canvas, .reach__map, iframe, #pullHint"
-    );
-  }
-
-  function onPullStart(y) {
-    if (sheetOpen || !atPageTop()) return false;
-    pulling = true;
-    pullStartY = y;
-    pullVelocity = 0;
-    pullRoot?.classList.add("is-dragging");
-    return true;
-  }
-
-  function onPullMove(clientY, event) {
-    if (!pulling || sheetOpen) return;
-    const raw = clientY - pullStartY;
-    if (raw <= 0) {
-      setPullTarget(0);
-      return;
-    }
-    if (!atPageTop() && pullCurrent <= 0) {
-      resetPull(false);
-      return;
-    }
-    setPullTarget(raw);
-    if (event && pullTarget > 0 && event.cancelable) event.preventDefault();
-  }
-
-  function onPullEnd() {
-    if (!pulling) return;
-    const shouldOpen = Math.max(pullCurrent, pullTarget) >= PULL_THRESHOLD;
-    pullRoot?.classList.remove("is-dragging");
-    pulling = false;
-    if (shouldOpen) openInviteSheet();
-    else resetPull(true);
-  }
-
-  window.addEventListener(
-    "touchstart",
-    (e) => {
-      if (shouldIgnorePullTarget(e.target)) return;
-      onPullStart(e.touches[0].clientY);
-    },
-    { passive: true }
-  );
-
-  window.addEventListener(
-    "touchmove",
-    (e) => {
-      if (!pulling) return;
-      onPullMove(e.touches[0].clientY, e);
-    },
-    { passive: false }
-  );
-
-  window.addEventListener(
-    "touchend",
-    () => {
-      onPullEnd();
-    },
-    { passive: true }
-  );
-  window.addEventListener(
-    "touchcancel",
-    () => {
-      resetPull(true);
-    },
-    { passive: true }
-  );
-
-  /* Desktop: click-drag down at top of page */
-  let mousePulling = false;
-  window.addEventListener("mousedown", (e) => {
-    if (e.button !== 0 || shouldIgnorePullTarget(e.target)) return;
-    if (onPullStart(e.clientY)) mousePulling = true;
-  });
-  window.addEventListener("mousemove", (e) => {
-    if (!mousePulling) return;
-    onPullMove(e.clientY, null);
-  });
-  window.addEventListener("mouseup", () => {
-    if (!mousePulling) return;
-    mousePulling = false;
-    onPullEnd();
-  });
-
-  /* Trackpad / mouse wheel: scroll "up" at top = pull */
-  let wheelAcc = 0;
-  let wheelTimer = null;
-  window.addEventListener(
-    "wheel",
-    (e) => {
-      if (sheetOpen || !atPageTop()) {
-        wheelAcc = 0;
-        return;
-      }
-      if (e.deltaY >= 0) {
-        wheelAcc = 0;
-        if (pullTarget > 0 || pullCurrent > 0) resetPull(true);
-        return;
-      }
-      wheelAcc += -e.deltaY;
-      pulling = true;
-      pullRoot?.classList.add("is-dragging");
-      setPullTarget(wheelAcc * 0.55);
-      clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(() => {
-        pulling = false;
-        pullRoot?.classList.remove("is-dragging");
-        if (Math.max(pullCurrent, pullTarget) >= PULL_THRESHOLD) openInviteSheet();
-        else resetPull(true);
-        wheelAcc = 0;
-      }, 140);
-    },
-    { passive: true }
-  );
+  inviteHint?.addEventListener("click", scrollToEvents);
 
   /* ---------- Scroll reveals ---------- */
   const reveals = document.querySelectorAll(".reveal");
@@ -816,7 +563,7 @@
 
   /* ---------- WhatsApp share ---------- */
   const shareText =
-    "You're invited to the wedding of Gomathi Shankar & Preetha!\n\n- Reception · 28 Nov 2026, 7 PM onwards\n- Muhurtham · 29 Nov 2026, 11 AM – 12 PM\n- Maruveedu · 30 Nov 2026\n\nShree Narayana Mahall, Bikshandarkoil, Trichy - 621216\n" +
+    "You're invited to the wedding of Gomathi Shankar & Preetha!\n\n- Reception · 28 Nov 2026, 7 PM onwards\n- Nichayathartham (Engagement) · 29 Nov 2026\n- Muhurtham · 29 Nov 2026, 11 AM – 12 PM\n\nShree Narayana Mahall, Bikshandarkoil, Trichy - 621216\n" +
     SITE_URL;
   const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
@@ -935,14 +682,6 @@
       end: "20261129T120000",
       file: "gs-preetha-muhurtham.ics",
     },
-    maruveedu: {
-      title: "Maruveedu — Gomathi Shankar & Preetha",
-      description: `Maruveedu — a warm welcome home, with blessings from both families.\nVenue: ${VENUE}\nMaps: ${MAPS}\nInvite: ${SITE_URL}`,
-      location: VENUE,
-      start: "20261130T100000",
-      end: "20261130T140000",
-      file: "gs-preetha-maruveedu.ics",
-    },
   };
 
   function escapeIcs(text) {
@@ -1016,32 +755,149 @@
     if (event) link.href = googleCalUrl(event);
   });
 
-  /* ---------- Music toggle ---------- */
+  /* ---------- Music (try autoplay; unmute / start on first gesture if blocked) ---------- */
   const musicBtn = document.getElementById("musicBtn");
   const bgMusic = document.getElementById("bgMusic");
-  let musicOn = false;
+  const speakerOn = musicBtn?.querySelector(".icon-btn__speaker--on");
+  const speakerOff = musicBtn?.querySelector(".icon-btn__speaker--off");
+  let musicPlaying = false;
+  let musicMuted = false;
+  let pendingUnmute = false;
 
-  musicBtn?.addEventListener("click", async () => {
+  function syncMusicIcon() {
+    if (!musicBtn) return;
+    const showSpeaker = !musicMuted;
+    musicBtn.classList.toggle("is-muted", musicMuted);
+    musicBtn.setAttribute("aria-pressed", showSpeaker ? "true" : "false");
+    musicBtn.setAttribute("aria-label", showSpeaker ? "Mute music" : "Unmute music");
+    if (speakerOn) {
+      speakerOn.hidden = !showSpeaker;
+      speakerOn.setAttribute("aria-hidden", showSpeaker ? "false" : "true");
+    }
+    if (speakerOff) {
+      speakerOff.hidden = showSpeaker;
+      speakerOff.setAttribute("aria-hidden", showSpeaker ? "true" : "false");
+    }
+  }
+
+  function applyAudibleState() {
+    if (!bgMusic) return;
+    bgMusic.muted = musicMuted || pendingUnmute;
+    bgMusic.volume = musicMuted ? 0 : 0.35;
+    syncMusicIcon();
+  }
+
+  function clearGestureUnlock() {
+    window.removeEventListener("pointerdown", onGestureUnlock, true);
+    window.removeEventListener("touchstart", onGestureUnlock, true);
+    window.removeEventListener("keydown", onGestureUnlock, true);
+    window.removeEventListener("wheel", onGestureUnlock, true);
+    window.removeEventListener("scroll", onGestureUnlock, true);
+  }
+
+  function onGestureUnlock(e) {
+    if (e?.target?.closest?.("#musicBtn")) return;
+
+    if (pendingUnmute && musicPlaying && !musicMuted) {
+      pendingUnmute = false;
+      applyAudibleState();
+      clearGestureUnlock();
+      return;
+    }
+
+    if (!musicPlaying && bgMusic) {
+      pendingUnmute = false;
+      musicMuted = false;
+      bgMusic.muted = false;
+      bgMusic.volume = 0.35;
+      bgMusic
+        .play()
+        .then(() => {
+          musicPlaying = true;
+          syncMusicIcon();
+          clearGestureUnlock();
+        })
+        .catch(() => {});
+    }
+  }
+
+  function armGestureUnlock() {
+    clearGestureUnlock();
+    window.addEventListener("pointerdown", onGestureUnlock, true);
+    window.addEventListener("touchstart", onGestureUnlock, { capture: true, passive: true });
+    window.addEventListener("keydown", onGestureUnlock, true);
+    window.addEventListener("wheel", onGestureUnlock, { capture: true, passive: true });
+    window.addEventListener("scroll", onGestureUnlock, true);
+  }
+
+  async function bootMusic() {
     if (!bgMusic) return;
     try {
-      ensureAudio();
-      if (!musicOn) {
+      const ctx = ensureAudio();
+      if (ctx?.state === "suspended") await ctx.resume();
+    } catch (_) {}
+
+    try {
+      pendingUnmute = false;
+      musicMuted = false;
+      bgMusic.muted = false;
+      bgMusic.volume = 0.35;
+      await bgMusic.play();
+      musicPlaying = true;
+      syncMusicIcon();
+      return;
+    } catch (_) {}
+
+    try {
+      bgMusic.muted = true;
+      bgMusic.volume = 0.35;
+      await bgMusic.play();
+      musicPlaying = true;
+      musicMuted = false;
+      pendingUnmute = true;
+      syncMusicIcon();
+      armGestureUnlock();
+      return;
+    } catch (_) {}
+
+    musicPlaying = false;
+    musicMuted = false;
+    pendingUnmute = false;
+    syncMusicIcon();
+    armGestureUnlock();
+  }
+
+  syncMusicIcon();
+
+  if (bgMusic) {
+    const kick = () => bootMusic();
+    if (bgMusic.readyState >= 2) kick();
+    else bgMusic.addEventListener("canplay", kick, { once: true });
+    window.addEventListener("load", kick, { once: true });
+  }
+
+  musicBtn?.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    if (!bgMusic) return;
+
+    if (!musicPlaying) {
+      pendingUnmute = false;
+      musicMuted = false;
+      try {
+        bgMusic.muted = false;
         bgMusic.volume = 0.35;
         await bgMusic.play();
-        musicOn = true;
-        musicBtn.setAttribute("aria-pressed", "true");
-        musicBtn.querySelector(".music-btn__label").textContent = "Playing";
-      } else {
-        bgMusic.pause();
-        musicOn = false;
-        musicBtn.setAttribute("aria-pressed", "false");
-        musicBtn.querySelector(".music-btn__label").textContent = "Music";
+        musicPlaying = true;
+        syncMusicIcon();
+        clearGestureUnlock();
+      } catch (_) {
+        showToast("Couldn't start music — try tapping again");
       }
-    } catch (_) {
-      musicBtn.querySelector(".music-btn__label").textContent = "Add song";
-      musicOn = false;
-      musicBtn.setAttribute("aria-pressed", "false");
-      showToast("Add assets/audio/bg.mp3 to enable music");
+      return;
     }
+
+    musicMuted = !musicMuted;
+    if (musicMuted) pendingUnmute = false;
+    applyAudibleState();
   });
 })();

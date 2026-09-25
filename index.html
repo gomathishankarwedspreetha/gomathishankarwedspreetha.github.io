@@ -4,25 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#246b66" />
-  <meta name="description" content="You're invited to the wedding of Gomathi Shankar & Preetha — 28–30 November 2026, Trichy." />
-
-  <!-- WhatsApp / Facebook / Social Preview -->
+  <meta name="description" content="You're invited to the wedding of Gomathi Shankar & Preetha — 28–29 November 2026, Trichy." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://gomathishankarwedspreetha.github.io/" />
   <meta property="og:title" content="Gomathi Shankar & Preetha · Wedding Invitation" />
-  <meta property="og:description" content="Together with our families, we invite you to celebrate our wedding · 28–30 November 2026" />
+  <meta property="og:description" content="Together with our families, we invite you to celebrate our wedding · 28–29 November 2026" />
   <meta property="og:image" content="https://gomathishankarwedspreetha.github.io/assets/images/og-preview.jpg" />
   <meta property="og:image:secure_url" content="https://gomathishankarwedspreetha.github.io/assets/images/og-preview.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Gomathi Shankar and Preetha wedding invitation" />
-
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Gomathi Shankar & Preetha · Wedding Invitation" />
-  <meta name="twitter:description" content="Join us for three days of joy · 28–30 November 2026" />
+  <meta name="twitter:description" content="Join us for three events of joy · 28–29 November 2026" />
   <meta name="twitter:image" content="https://gomathishankarwedspreetha.github.io/assets/images/og-preview.jpg" />
-
   <title>Gomathi Shankar & Preetha · Wedding</title>
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="assets/icons/favicon.png" type="image/png" sizes="32x32" />
@@ -33,44 +29,6 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="pull-zone" id="pullZone" aria-hidden="true">
-    <div class="pull-zone__inner">
-      <span class="pull-zone__ring" aria-hidden="true"></span>
-      <p class="pull-zone__label" id="pullZoneLabel">Pull for invite</p>
-    </div>
-  </div>
-
-  <!-- Fixed overlays stay outside pull-root so cursor/petals remain visible -->
-  <div class="grain" aria-hidden="true"></div>
-  <canvas id="petals" class="petals" aria-hidden="true"></canvas>
-  <div id="ripples" class="ripples" aria-hidden="true"></div>
-  <div class="cursor" id="cursor" aria-hidden="true">
-    <span class="cursor__ring"></span>
-    <span class="cursor__dot"></span>
-  </div>
-
-  <div class="pull-root" id="pullRoot">
-  <header class="topbar">
-    <button type="button" class="chip-btn chip-btn--wa interactive" id="shareBtn" data-tap aria-label="Share on WhatsApp">
-      <span class="chip-btn__wa" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.82c2.17 0 4.2.85 5.73 2.38a8.07 8.07 0 0 1 2.37 5.73c0 4.46-3.63 8.09-8.1 8.09-1.42 0-2.8-.37-4.02-1.07l-.29-.17-3.12.82.83-3.04-.19-.31a8.08 8.08 0 0 1-1.24-4.32c0-4.46 3.64-8.1 8.1-8.1zm4.52 10.32c-.2-.1-1.18-.58-1.36-.65-.18-.07-.31-.1-.44.1-.13.2-.5.65-.62.78-.11.13-.23.15-.43.05-.2-.1-.84-.31-1.6-.99-.59-.53-.99-1.18-1.1-1.38-.12-.2-.01-.31.09-.41.09-.09.2-.23.3-.35.1-.12.13-.2.2-.33.07-.13.03-.25-.02-.35-.05-.1-.44-1.06-.6-1.45-.16-.38-.32-.33-.44-.33h-.38c-.13 0-.34.05-.52.25-.18.2-.68.66-.68 1.62 0 .95.7 1.87.8 2 .1.13 1.37 2.09 3.32 2.93 1.95.84 1.95.56 2.3.53.35-.03 1.18-.48 1.34-.95.17-.46.17-.86.12-.95-.05-.08-.18-.13-.38-.23z"/></svg>
-      </span>
-      <span class="chip-btn__label">WhatsApp</span>
-    </button>
-    <button type="button" class="chip-btn interactive" id="musicBtn" aria-pressed="false" aria-label="Play music" data-tap>
-      <span class="chip-btn__dot" aria-hidden="true"></span>
-      <span class="chip-btn__label music-btn__label">Music</span>
-    </button>
-  </header>
-
-  <audio id="bgMusic" loop preload="none">
-    <source src="assets/audio/bg.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="bloopSound" preload="auto">
-    <source src="assets/audio/bloop.mp3" type="audio/mpeg" />
-  </audio>
-
-  <!-- Reusable kolam motif -->
   <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
     <symbol id="kolam-line" viewBox="0 0 320 40">
       <g fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
@@ -94,9 +52,35 @@
     </symbol>
   </svg>
 
+  <div class="grain" aria-hidden="true"></div>
+  <canvas id="petals" class="petals" aria-hidden="true"></canvas>
+  <div id="ripples" class="ripples" aria-hidden="true"></div>
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="cursor__ring"></span>
+    <span class="cursor__dot"></span>
+  </div>
+
+  <div class="float-dock" role="toolbar" aria-label="Share and music">
+    <button type="button" class="icon-btn icon-btn--wa interactive" id="shareBtn" data-tap aria-label="Share on WhatsApp">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 1.82c2.17 0 4.2.85 5.73 2.38a8.07 8.07 0 0 1 2.37 5.73c0 4.46-3.63 8.09-8.1 8.09-1.42 0-2.8-.37-4.02-1.07l-.29-.17-3.12.82.83-3.04-.19-.31a8.08 8.08 0 0 1-1.24-4.32c0-4.46 3.64-8.1 8.1-8.1zm4.52 10.32c-.2-.1-1.18-.58-1.36-.65-.18-.07-.31-.1-.44.1-.13.2-.5.65-.62.78-.11.13-.23.15-.43.05-.2-.1-.84-.31-1.6-.99-.59-.53-.99-1.18-1.1-1.38-.12-.2-.01-.31.09-.41.09-.09.2-.23.3-.35.1-.12.13-.2.2-.33.07-.13.03-.25-.02-.35-.05-.1-.44-1.06-.6-1.45-.16-.38-.32-.33-.44-.33h-.38c-.13 0-.34.05-.52.25-.18.2-.68.66-.68 1.62 0 .95.7 1.87.8 2 .1.13 1.37 2.09 3.32 2.93 1.95.84 1.95.56 2.3.53.35-.03 1.18-.48 1.34-.95.17-.46.17-.86.12-.95-.05-.08-.18-.13-.38-.23z"/></svg>
+    </button>
+    <button type="button" class="icon-btn icon-btn--music interactive" id="musicBtn" aria-pressed="true" aria-label="Mute music" data-tap>
+      <span class="icon-btn__speaker icon-btn__speaker--on" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+      </span>
+      <span class="icon-btn__speaker icon-btn__speaker--off" aria-hidden="true" hidden>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m23 9-6 6M17 9l6 6"/></svg>
+      </span>
+    </button>
+  </div>
+  <audio id="bgMusic" loop preload="auto" playsinline webkit-playsinline>
+    <source src="assets/audio/bgmusic.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="bloopSound" preload="auto">
+    <source src="assets/audio/bloop.mp3" type="audio/mpeg" />
+  </audio>
   <main class="page">
     <div class="page__texture" aria-hidden="true"></div>
-    <!-- HERO -->
     <section class="hero" id="hero">
       <div class="hero__wash" aria-hidden="true"></div>
       <div class="hero__parallax" id="heroParallax">
@@ -106,7 +90,6 @@
         <div class="hero__veil" data-speed="0.4" aria-hidden="true"></div>
         <div class="hero__glow" data-speed="0.55" aria-hidden="true"></div>
       </div>
-
       <div class="hero__content" data-speed="0.12">
         <div class="kolam kolam--hero" aria-hidden="true">
           <svg viewBox="0 0 320 40"><use href="#kolam-line" /></svg>
@@ -118,8 +101,7 @@
           <span class="names__bride">Preetha</span>
         </h1>
         <p class="hero__sub">are getting married</p>
-        <p class="hero__date">28 — 30 November 2026</p>
-
+        <p class="hero__date">28 &amp; 29 November 2026</p>
         <div class="countdown" id="countdown" aria-label="Countdown to Muhurtham">
           <div class="countdown__unit">
             <span class="countdown__num" data-unit="days">00</span>
@@ -140,35 +122,29 @@
         </div>
         <p class="countdown__hint">until Muhurtham · 29 Nov · 11:00 AM</p>
 
-        <a href="#events" class="scroll-cue interactive" data-tap>
-          <p class="hero__pull-hint interactive" id="pullHint" role="button" tabindex="0">
+        <a href="#events" class="scroll-cue interactive" id="inviteHint" data-tap>
+          <p class="hero__invite-hint">
             <span>Our celebrations</span><br/>
-            <span>Tap or pull down for invite</span>
+            <span>Tap for invite</span>
           </p>
         </a>
       </div>
     </section>
-
     <div class="kolam-divider" aria-hidden="true">
       <svg viewBox="0 0 320 40"><use href="#kolam-line" /></svg>
     </div>
-
-    <!-- INVITE / FAMILIES -->
     <section class="invite section" id="invite">
       <div class="invite__grid">
         <figure class="invite__photo reveal">
-          <img src="assets/images/couple-hero.jpg" alt="Gomathi Shankar and Preetha smiling together" width="1000" height="1250" loading="lazy" />
+          <img src="assets/images/couple-4.jpg" alt="Gomathi Shankar and Preetha smiling together" width="1000" height="1250" loading="lazy" />
         </figure>
         <div class="invite__copy reveal">
-          <!-- <p class="eyebrow">With the blessings of</p> -->
-          <!-- <h2 class="section-title">You're invited</h2> -->
           <p class="invite__lead">
             Together with their families,
             <strong>Gomathi Shankar</strong> &amp; <strong>Preetha</strong>
             request the pleasure of your company to celebrate their wedding.
           </p>
           <p class="tamil soft">வாழ்க்கைப் பயணம் இனிதே தொடரட்டும்</p>
-
           <div class="parents">
             <div class="parents__side">
               <h3>Groom's parents</h3>
@@ -187,19 +163,15 @@
         </div>
       </div>
     </section>
-
     <div class="kolam-divider" aria-hidden="true">
       <svg viewBox="0 0 320 40"><use href="#kolam-line" /></svg>
     </div>
-
-    <!-- MEMORIES -->
     <section class="memories section" id="memories">
       <div class="section-head reveal">
-        <p class="eyebrow">Engagement moments</p>
+        <p class="eyebrow">Betrothal moments</p>
         <h2 class="section-title">A little of us</h2>
         <p class="section-lead">A few frames from the day our families blessed this beginning — jasmine, laughter, and quiet promises.</p>
       </div>
-
       <div class="memory-stack">
         <article class="memory memory--left reveal">
           <div class="memory__frame">
@@ -212,10 +184,9 @@
             <p class="tamil soft">இரு கண்களில் ஒரு கனவு</p>
           </div>
         </article>
-
         <article class="memory memory--right reveal">
           <div class="memory__frame">
-            <img src="assets/images/couple-2.jpg" alt="Gomathi Shankar and Preetha forehead to forehead" width="1000" height="1250" loading="lazy" />
+            <img src="assets/images/couple-5.jpg" alt="Gomathi Shankar and Preetha forehead to forehead" width="1000" height="1250" loading="lazy" />
           </div>
           <div class="memory__caption">
             <span class="memory__word">Promise</span>
@@ -224,7 +195,6 @@
             <p class="tamil soft">மௌனத்தில் சொல்லப்பட்ட உறுதி</p>
           </div>
         </article>
-
         <article class="memory memory--left memory--hands reveal">
           <div class="memory__frame memory__frame--wide">
             <img src="assets/images/hands-held.png" alt="Hands held with henna and gold" width="1200" height="800" loading="lazy" />
@@ -238,12 +208,9 @@
         </article>
       </div>
     </section>
-
     <div class="kolam-divider" aria-hidden="true">
       <svg viewBox="0 0 320 40"><use href="#kolam-line" /></svg>
     </div>
-
-    <!-- SCRATCH CARD -->
     <section class="scratch-section section" id="scratch">
       <div class="section-head reveal">
         <p class="eyebrow">A little surprise</p>
@@ -261,16 +228,13 @@
         <p class="scratch__guide" id="scratchGuide">Scratch here</p>
       </div>
     </section>
-
     <div class="kolam-divider" aria-hidden="true">
       <svg viewBox="0 0 320 40"><use href="#kolam-line" /></svg>
     </div>
-
-    <!-- EVENTS -->
     <section class="events section" id="events">
       <div class="section-head reveal">
         <p class="eyebrow">Join us for</p>
-        <h2 class="section-title">Three days of joy</h2>
+        <h2 class="section-title">Three events of joy</h2>
       </div>
 
       <ol class="timeline">
@@ -284,13 +248,27 @@
             <h3>Reception</h3>
             <p class="timeline__time">7:00 PM onwards</p>
             <p>An evening of warmth, laughter, and celebration with family &amp; friends.</p>
+            <p class="tamil soft"></p>வரவேற்பு</p>
             <div class="cal-actions">
               <button type="button" class="link-btn interactive" data-cal="reception" data-tap>Add to Calendar</button>
               <a class="link-btn interactive" data-gcal="reception" target="_blank" rel="noopener noreferrer" data-tap>Google Calendar</a>
             </div>
           </div>
         </li>
-
+        <li class="timeline__item reveal">
+          <div class="timeline__when">
+            <span class="timeline__day">Sat</span>
+            <span class="timeline__date">29</span>
+            <span class="timeline__month">Nov 2026</span>
+          </div>
+          <div class="timeline__body">
+            <h3>Nichayathartham</h3>
+            <p class="timeline__kicker">Engagement</p>
+            <p class="timeline__time timeline__time--tbd">Time to be announced</p>
+            <p>The engagement — when families seal the promise with blessings.</p>
+            <p class="tamil soft">நிச்சயதார்த்தம்</p>
+          </div>
+        </li>
         <li class="timeline__item timeline__item--feature reveal">
           <div class="timeline__badge">Muhurtham</div>
           <div class="timeline__when">
@@ -309,38 +287,13 @@
             </div>
           </div>
         </li>
-
-        <li class="timeline__item reveal">
-          <div class="timeline__when">
-            <span class="timeline__day">Sun</span>
-            <span class="timeline__date">30</span>
-            <span class="timeline__month">Nov 2026</span>
-          </div>
-          <div class="timeline__body">
-            <h3>Maruveedu</h3>
-            <p class="timeline__time">Morning onwards</p>
-            <p>A warm welcome home, with blessings from both families.</p>
-            <div class="cal-actions">
-              <button type="button" class="link-btn interactive" data-cal="maruveedu" data-tap>Add to Calendar</button>
-              <a class="link-btn interactive" data-gcal="maruveedu" target="_blank" rel="noopener noreferrer" data-tap>Google Calendar</a>
-            </div>
-          </div>
-        </li>
       </ol>
     </section>
-
     <div class="kolam-divider" aria-hidden="true">
       <svg viewBox="0 0 320 40"><use href="#kolam-line" /></svg>
     </div>
-
-    <!-- HANDS + VENUE -->
     <section class="venue section" id="venue">
       <div class="venue__top">
-        <div class="venue__hands reveal">
-          <img src="assets/images/hands-held.png" alt="Hands held together with henna and gold" width="1200" height="800" loading="lazy" />
-          <p class="venue__quote tamil">இரண்டு உள்ளங்கள் · ஒரு பாதை</p>
-        </div>
-
         <div class="venue__card reveal">
           <p class="eyebrow">Where to find us</p>
           <h2 class="section-title">Venue</h2>
@@ -348,7 +301,7 @@
           <address class="venue__address selectable">
             6/3960, Thiru Narayana Nagar,<br />
             No 1 Tollgate, Bikshandarkoil,<br />
-            Tamil Nadu 621216
+            Trichy - 621216
           </address>
           <div class="venue__actions">
             <a
@@ -358,7 +311,7 @@
               rel="noopener noreferrer"
               data-tap
             >
-              Open in Maps
+            Open in Maps
             </a>
             <a class="btn btn--wa interactive" id="shareBtnVenue" href="#" target="_blank" rel="noopener noreferrer" data-tap>
               <span class="btn__wa" aria-hidden="true">
@@ -368,8 +321,10 @@
             </a>
           </div>
         </div>
+        <div class="venue__hands reveal">
+          <img src="assets/images/couple-6.jpg" alt="Gomathi Shankar and Preetha together" width="1200" height="800" loading="lazy" />
+        </div>
       </div>
-
       <div class="venue__top reach reveal">
         <div class="reach__map">
           <div class="reach__map-media">
@@ -396,12 +351,11 @@
             </a>
           </div>
         </div>
-
         <div class="venue__card reach__card">
           <p class="eyebrow">How to reach</p>
           <h2 class="section-title">A quick guide</h2>
           <ul class="reach__tips">
-            <li><strong>Landmark:</strong> Near No. 1 Tollgate, Bikshandarkoil (Trichy side).</li>
+            <li><strong>Landmark:</strong> Near No. 1 Tollgate, Bikshandarkoil, Trichy.</li>
             <li><strong>By car / cab:</strong> Search “Shree Narayana Mahall” in Google Maps.</li>
             <li><strong>From Trichy:</strong> Head toward Tollgate / Bikshandarkoil — Thiru Narayana Nagar.</li>
             <li><strong>Parking:</strong> Available at the venue premises.</li>
@@ -418,12 +372,9 @@
         </div>
       </div>
     </section>
-
     <div class="kolam-divider" aria-hidden="true">
       <svg viewBox="0 0 320 40"><use href="#kolam-line" /></svg>
     </div>
-
-    <!-- CLOSING -->
     <section class="closing section" id="closing">
       <div class="closing__inner reveal">
         <p class="eyebrow">With gratitude</p>
@@ -433,47 +384,11 @@
       </div>
     </section>
   </main>
-
   <footer class="footer">
     <p>With love · Gomathi Shankar &amp; Preetha · Nov 2026</p>
   </footer>
-  </div><!-- /.pull-root -->
-
-  <div class="invite-sheet" id="inviteSheet" hidden>
-    <button type="button" class="invite-sheet__backdrop interactive" id="inviteSheetBackdrop" aria-label="Close invite card"></button>
-    <article class="invite-sheet__card interactive" role="dialog" aria-modal="true" aria-labelledby="inviteSheetTitle">
-      <button type="button" class="invite-sheet__x interactive" id="inviteSheetClose" aria-label="Close">×</button>
-      <p class="invite-sheet__eyebrow">Wedding invitation</p>
-      <h2 class="invite-sheet__title" id="inviteSheetTitle">Gomathi Shankar <span class="amp">&</span> Preetha</h2>
-      <p class="invite-sheet__tamil tamil">திருமண அழைப்பிதழ்</p>
-      <dl class="invite-sheet__list">
-        <div>
-          <dt>Reception</dt>
-          <dd>Fri 28 Nov 2026 · 7:00 PM onwards</dd>
-        </div>
-        <div>
-          <dt>Muhurtham</dt>
-          <dd>Sat 29 Nov 2026 · 11:00 AM — 12:00 PM</dd>
-        </div>
-        <div>
-          <dt>Maruveedu</dt>
-          <dd>Sun 30 Nov 2026 · Morning onwards</dd>
-        </div>
-        <div>
-          <dt>Venue</dt>
-          <dd class="selectable">Shree Narayana Mahall<br />No 1 Tollgate, Bikshandarkoil, TN 621216</dd>
-        </div>
-        <div>
-          <dt>With blessings of</dt>
-          <dd>Subramani &amp; Ramalakshmi · Ramachandran &amp; Jeyasankari</dd>
-        </div>
-      </dl>
-    </article>
-  </div>
-
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
-
   <script src="script.js"></script>
 </body>
 </html>
