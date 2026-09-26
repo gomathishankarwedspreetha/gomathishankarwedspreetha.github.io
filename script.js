@@ -563,7 +563,7 @@
 
   /* ---------- WhatsApp share ---------- */
   const shareText =
-    "You're invited to the wedding of Gomathi Shankar & Preetha!\n\n- Reception · 28 Nov 2026, 7 PM onwards\n- Nichayathartham (Engagement) · 29 Nov 2026\n- Muhurtham · 29 Nov 2026, 11 AM – 12 PM\n\nShree Narayana Mahall, Bikshandarkoil, Trichy - 621216\n" +
+    "You're invited to the wedding of Gomathi Shankar & Preetha!\n\n- Reception · 28 Nov 2026, 7:00 PM onwards\n- Nichayathartham (Engagement) · 29 Nov 2026, 7:00 AM onwards\n- Muhurtham · 29 Nov 2026, 11:00 AM – 12:00 PM\n\nShree Narayana Mahall, Bikshandarkoil, Trichy - 621216\n" +
     SITE_URL;
   const waUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
 
@@ -664,72 +664,30 @@
     requestAnimationFrame(tick);
   }
 
-  /* ---------- Calendar events ---------- */
+  /* ---------- Calendar events (Google Calendar) ---------- */
   const events = {
     reception: {
       title: "Reception — Gomathi Shankar & Preetha",
-      description: `Wedding reception of Gomathi Shankar & Preetha.\nVenue: ${VENUE}\nMaps: ${MAPS}\nInvite: ${SITE_URL}`,
+      description: `Wedding reception of Gomathi Shankar & Preetha (7:00 PM onwards).\nVenue: ${VENUE}\nMaps: ${MAPS}\nInvite: ${SITE_URL}`,
       location: VENUE,
       start: "20261128T190000",
       end: "20261128T230000",
-      file: "gs-preetha-reception.ics",
+    },
+    engagement: {
+      title: "Nichayathartham (Engagement) — Gomathi Shankar & Preetha",
+      description: `Nichayathartham / Engagement of Gomathi Shankar & Preetha (7:00 AM onwards).\nVenue: ${VENUE}\nMaps: ${MAPS}\nInvite: ${SITE_URL}`,
+      location: VENUE,
+      start: "20261129T070000",
+      end: "20261129T103000",
     },
     muhurtham: {
       title: "Muhurtham — Gomathi Shankar & Preetha",
-      description: `Muhurtham of Gomathi Shankar & Preetha (11 AM – 12 PM).\nVenue: ${VENUE}\nMaps: ${MAPS}\nInvite: ${SITE_URL}`,
+      description: `Muhurtham of Gomathi Shankar & Preetha (11:00 AM – 12:00 PM).\nVenue: ${VENUE}\nMaps: ${MAPS}\nInvite: ${SITE_URL}`,
       location: VENUE,
       start: "20261129T110000",
       end: "20261129T120000",
-      file: "gs-preetha-muhurtham.ics",
     },
   };
-
-  function escapeIcs(text) {
-    return String(text)
-      .replace(/\\/g, "\\\\")
-      .replace(/\n/g, "\\n")
-      .replace(/,/g, "\\,")
-      .replace(/;/g, "\\;");
-  }
-
-  function buildIcs(event) {
-    const stamp = new Date()
-      .toISOString()
-      .replace(/[-:]/g, "")
-      .replace(/\.\d{3}Z$/, "Z");
-    return [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//Gomathi Shankar & Preetha Wedding//EN",
-      "CALSCALE:GREGORIAN",
-      "METHOD:PUBLISH",
-      "BEGIN:VEVENT",
-      `UID:${event.file}@gomathishankarwedspreetha.github.io`,
-      `DTSTAMP:${stamp}`,
-      `DTSTART;TZID=Asia/Kolkata:${event.start}`,
-      `DTEND;TZID=Asia/Kolkata:${event.end}`,
-      `SUMMARY:${escapeIcs(event.title)}`,
-      `DESCRIPTION:${escapeIcs(event.description)}`,
-      `LOCATION:${escapeIcs(event.location)}`,
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join("\r\n");
-  }
-
-  function downloadIcs(key) {
-    const event = events[key];
-    if (!event) return;
-    const blob = new Blob([buildIcs(event)], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = event.file;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    showToast("Calendar file downloaded");
-  }
 
   function googleCalUrl(event) {
     const params = new URLSearchParams({
@@ -742,12 +700,6 @@
     });
     return `https://calendar.google.com/calendar/render?${params.toString()}`;
   }
-
-  document.querySelectorAll("[data-cal]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      downloadIcs(btn.getAttribute("data-cal"));
-    });
-  });
 
   document.querySelectorAll("[data-gcal]").forEach((link) => {
     const key = link.getAttribute("data-gcal");
