@@ -277,19 +277,6 @@
 
   updateParallax();
 
-  /* ---------- Tap for invite → smooth scroll to events ---------- */
-  const inviteHint = document.getElementById("inviteHint");
-  const eventsSection = document.getElementById("events");
-
-  function scrollToEvents(e) {
-    if (e) e.preventDefault();
-    if (!eventsSection) return;
-    eventsSection.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-    playBloop();
-  }
-
-  inviteHint?.addEventListener("click", scrollToEvents);
-
   /* ---------- Scroll reveals ---------- */
   const reveals = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {
@@ -707,9 +694,13 @@
     if (event) link.href = googleCalUrl(event);
   });
 
-  /* ---------- Music ----------
-     Try autoplay on load. Always arm touch / click / scroll to start or unmute.
+  /* ---------- Soft veil threshold + Music ----------
+     Veil tap starts audible music, then fades away.
+     After open: keep gesture unlock as a quiet fallback.
+     To revert: remove #entryVeil HTML, .entry-veil CSS, and openEntryVeil() below.
   -------------------------------- */
+  const entryVeil = document.getElementById("entryVeil");
+  const entryVeilBtn = document.getElementById("entryVeilBtn");
   const musicBtn = document.getElementById("musicBtn");
   const bgMusic = document.getElementById("bgMusic");
   const speakerOn = musicBtn?.querySelector(".icon-btn__speaker--on");
@@ -718,6 +709,7 @@
   let musicMuted = false;
   let pendingUnmute = false;
   let gestureArmed = false;
+  let veilOpen = !!entryVeil;
 
   function syncMusicIcon() {
     if (!musicBtn) return;
@@ -759,6 +751,7 @@
   }
 
   function onGestureUnlock(e) {
+    if (veilOpen) return;
     if (e?.target?.closest?.("#musicBtn")) return;
     if (musicMuted) {
       /* User chose mute — stop trying to force sound */
@@ -806,53 +799,116 @@
     window.addEventListener("touchmove", onGestureUnlock, { capture: true, passive: true });
   }
 
-  async function bootMusic() {
-    if (!bgMusic) return;
+  async function startMusicAudible() {
+    if (!bgMusic) return false;
     try {
       const ctx = ensureAudio();
       if (ctx?.state === "suspended") await ctx.resume();
     } catch (_) {}
 
-    /* Always listen — touch / click / scroll will start or unmute */
-    armGestureUnlock();
-
+    pendingUnmute = false;
+    musicMuted = false;
+    bgMusic.muted = false;
+    bgMusic.volume = 0.35;
     try {
-      pendingUnmute = false;
-      musicMuted = false;
-      bgMusic.muted = false;
-      bgMusic.volume = 0.35;
       await bgMusic.play();
       musicPlaying = true;
       syncMusicIcon();
       clearGestureUnlock();
-      return;
-    } catch (_) {}
+      return true;
+    } catch (_) {
+      musicPlaying = false;
+      syncMusicIcon();
+      return false;
+    }
+  }
 
+  async function bootMusicQuiet() {
+    /* Prefetch / muted warm-up only — audible start waits for veil tap */
+    if (!bgMusic || veilOpen) return;
+    armGestureUnlock();
     try {
       bgMusic.muted = true;
       bgMusic.volume = 0.35;
       await bgMusic.play();
       musicPlaying = true;
-      musicMuted = false;
       pendingUnmute = true;
+      musicMuted = false;
       syncMusicIcon();
-      return;
-    } catch (_) {}
+    } catch (_) {
+      musicPlaying = false;
+      pendingUnmute = false;
+      syncMusicIcon();
+    }
+  }
 
-    musicPlaying = false;
-    musicMuted = false;
-    pendingUnmute = false;
-    syncMusicIcon();
+  function dismissEntryVeil() {
+    if (!entryVeil || !veilOpen) return;
+    veilOpen = false;
+    document.body.classList.remove("is-veiled");
+    entryVeil.classList.add("is-leaving");
+    const remove = () => {
+      entryVeil.remove();
+    };
+    if (reduceMotion) {
+      remove();
+      return;
+    }
+    entryVeil.addEventListener("transitionend", remove, { once: true });
+    window.setTimeout(remove, 1100);
+  }
+
+  async function openEntryVeil(e) {
+    if (e) e.preventDefault();
+    if (!veilOpen) return;
+    entryVeilBtn?.setAttribute("disabled", "true");
+    const ok = await startMusicAudible();
+    dismissEntryVeil();
+    if (!ok) {
+      armGestureUnlock();
+      showToast("Tap once more if the music is quiet");
+    } else {
+      armGestureUnlock();
+    }
   }
 
   syncMusicIcon();
-  armGestureUnlock();
 
-  if (bgMusic) {
-    const kick = () => bootMusic();
-    if (bgMusic.readyState >= 2) kick();
-    else bgMusic.addEventListener("canplay", kick, { once: true });
-    window.addEventListener("load", kick, { once: true });
+  if (entryVeil && entryVeilBtn) {
+    entryVeilBtn.addEventListener("click", openEntryVeil);
+    entryVeilBtn.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openEntryVeil(e);
+        }
+      }
+    );
+    /* Warm buffer under the veil (muted) so tap can unmute instantly */
+    if (bgMusic) {
+      const warm = async () => {
+        try {
+          bgMusic.muted = true;
+          bgMusic.volume = 0.35;
+          await bgMusic.play();
+          musicPlaying = true;
+          pendingUnmute = true;
+          musicMuted = false;
+          syncMusicIcon();
+        } catch (_) {}
+      };
+      if (bgMusic.readyState >= 2) warm();
+      else bgMusic.addEventListener("canplay", warm, { once: true });
+    }
+  } else {
+    armGestureUnlock();
+    if (bgMusic) {
+      const kick = () => bootMusicQuiet();
+      if (bgMusic.readyState >= 2) kick();
+      else bgMusic.addEventListener("canplay", kick, { once: true });
+      window.addEventListener("load", kick, { once: true });
+    }
   }
 
   musicBtn?.addEventListener("click", async (e) => {
@@ -860,26 +916,14 @@
     if (!bgMusic) return;
 
     if (!musicPlaying) {
-      pendingUnmute = false;
-      musicMuted = false;
-      try {
-        bgMusic.muted = false;
-        bgMusic.volume = 0.35;
-        await bgMusic.play();
-        musicPlaying = true;
-        syncMusicIcon();
-        clearGestureUnlock();
-      } catch (_) {
-        showToast("Couldn't start music — try tapping again");
-      }
+      const ok = await startMusicAudible();
+      if (!ok) showToast("Couldn't start music — try tapping again");
       return;
     }
 
     musicMuted = !musicMuted;
     if (musicMuted) {
       pendingUnmute = false;
-    } else {
-      /* Unmuting — keep gesture arming off; already playing */
     }
     applyAudibleState();
   });
